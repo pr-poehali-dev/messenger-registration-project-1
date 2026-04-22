@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import Icon from "@/components/ui/icon";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -535,11 +535,178 @@ const SettingsPanel = () => {
   );
 };
 
+// ─── Login Screen ─────────────────────────────────────────────────────────────
+const DEMO_LOGIN = "admin@corp.ru";
+const DEMO_PASSWORD = "securechat";
+
+const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    setTimeout(() => {
+      if (email === DEMO_LOGIN && password === DEMO_PASSWORD) {
+        onLogin();
+      } else {
+        setError("Неверный email или пароль");
+        setLoading(false);
+      }
+    }, 800);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      style={{ background: "hsl(218 55% 10%)" }}>
+
+      {/* Background grid */}
+      <div className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage: "linear-gradient(hsl(213 72% 60%) 1px, transparent 1px), linear-gradient(90deg, hsl(213 72% 60%) 1px, transparent 1px)",
+          backgroundSize: "48px 48px"
+        }} />
+
+      {/* Glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none"
+        style={{ background: "hsl(213 72% 50%)" }} />
+
+      {/* Card */}
+      <div className="relative w-full max-w-sm mx-4 animate-fade-in">
+
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: "hsl(213 72% 42%)" }}>
+            <Icon name="Shield" size={28} style={{ color: "white" }} />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: "hsl(210 30% 95%)", fontFamily: "'IBM Plex Sans', sans-serif" }}>
+            SecureChat
+          </h1>
+          <p className="text-sm mt-1" style={{ color: "hsl(213 20% 55%)" }}>
+            Корпоративный мессенджер
+          </p>
+        </div>
+
+        {/* Form */}
+        <div className="rounded-2xl p-8 border"
+          style={{ background: "hsl(218 45% 14%)", borderColor: "hsl(218 40% 22%)" }}>
+
+          <h2 className="text-base font-semibold mb-6" style={{ color: "hsl(210 30% 92%)" }}>
+            Вход в систему
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium mb-1.5 uppercase tracking-wide"
+                style={{ color: "hsl(213 20% 55%)" }}>
+                Корпоративный email
+              </label>
+              <div className="relative">
+                <Icon name="Mail" size={15} className="absolute left-3 top-1/2 -translate-y-1/2"
+                  style={{ color: "hsl(213 20% 50%)" }} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="login@company.ru"
+                  required
+                  className="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg outline-none transition-all"
+                  style={{
+                    background: "hsl(218 50% 10%)",
+                    border: "1px solid hsl(218 40% 24%)",
+                    color: "hsl(210 30% 92%)",
+                  }}
+                  onFocus={e => e.target.style.borderColor = "hsl(213 72% 50%)"}
+                  onBlur={e => e.target.style.borderColor = "hsl(218 40% 24%)"}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1.5 uppercase tracking-wide"
+                style={{ color: "hsl(213 20% 55%)" }}>
+                Пароль
+              </label>
+              <div className="relative">
+                <Icon name="Lock" size={15} className="absolute left-3 top-1/2 -translate-y-1/2"
+                  style={{ color: "hsl(213 20% 50%)" }} />
+                <input
+                  type={showPass ? "text" : "password"}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full pl-9 pr-10 py-2.5 text-sm rounded-lg outline-none transition-all"
+                  style={{
+                    background: "hsl(218 50% 10%)",
+                    border: "1px solid hsl(218 40% 24%)",
+                    color: "hsl(210 30% 92%)",
+                  }}
+                  onFocus={e => e.target.style.borderColor = "hsl(213 72% 50%)"}
+                  onBlur={e => e.target.style.borderColor = "hsl(218 40% 24%)"}
+                />
+                <button type="button" onClick={() => setShowPass(!showPass)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-70">
+                  <Icon name={showPass ? "EyeOff" : "Eye"} size={15} style={{ color: "hsl(213 20% 50%)" }} />
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg animate-fade-in"
+                style={{ background: "hsl(0 60% 20%)", color: "hsl(0 80% 75%)", border: "1px solid hsl(0 50% 30%)" }}>
+                <Icon name="AlertCircle" size={13} />
+                {error}
+              </div>
+            )}
+
+            <button type="submit" disabled={loading}
+              className="w-full py-2.5 rounded-lg text-sm font-semibold transition-all mt-2 flex items-center justify-center gap-2"
+              style={{ background: "hsl(213 72% 42%)", color: "white", opacity: loading ? 0.7 : 1 }}>
+              {loading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />
+                  Проверка...
+                </>
+              ) : (
+                <>
+                  <Icon name="LogIn" size={15} />
+                  Войти
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 pt-5 border-t" style={{ borderColor: "hsl(218 40% 22%)" }}>
+            <div className="flex items-center gap-2 text-xs" style={{ color: "hsl(213 20% 45%)" }}>
+              <Icon name="Info" size={12} />
+              <span>Демо: <span style={{ color: "hsl(213 50% 65%)" }}>admin@corp.ru</span> / <span style={{ color: "hsl(213 50% 65%)" }}>securechat</span></span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-6 text-xs" style={{ color: "hsl(213 20% 38%)", fontFamily: "'IBM Plex Mono', monospace" }}>
+          SecureChat v2.4.1 · E2E Encrypted · ФСТЭК
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function Index() {
+  const [auth, setAuth] = useState(false);
   const [section, setSection] = useState<Section>("chats");
   const [activeChat, setActiveChat] = useState(1);
   const isChats = section === "chats";
+
+  if (!auth) return <LoginScreen onLogin={() => setAuth(true)} />;
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "hsl(220 20% 97%)" }}>
